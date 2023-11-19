@@ -11,5 +11,5 @@ class Tempat extends Model
 {
     use HasApiTokens, HasFactory, Notifiable;
     protected $table = 'tempats'; // Sesuaikan dengan nama tabel database Anda jika berbeda
-
+    protected $fillable = ['nama_tempat', 'deskripsi', 'alamat', 'kapasitas', 'harga', 'foto_tempat', 'kontak'];
 }

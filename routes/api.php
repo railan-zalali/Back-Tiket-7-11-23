@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApiLoginController;
 use App\Http\Controllers\TempatController;
 use App\Http\Controllers\TicketTypeController;
 use App\Http\Controllers\TiketController;
@@ -23,6 +24,18 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// Route::post('/profile/update', [ApiLoginController::class, 'update'])->middleware(['auth', 'verified']);
+
+
+// Route::middleware('auth:api')->group(function () {
+//     Route::post('/profile/update', 'ApiLoginController@update');
+// });
+
+
+
+// Route::middleware('auth')->group(function () {
+//     Route::post('/profile/update', [ApiLoginController::class, 'update']);
+// });
 
 Route::get('users', [UserController::class, 'index']);
 Route::get('places', [TempatController::class, 'index']);
