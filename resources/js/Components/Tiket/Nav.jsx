@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Link, usePage } from "@inertiajs/react";
 import gambar from "../../../img/test.png";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { Dialog, Transition } from "@headlessui/react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -11,11 +11,14 @@ import "react-toastify/dist/ReactToastify.css";
 import PrimaryButton from "../PrimaryButton";
 import ButtonNav from "../ButtonNav";
 
-const Nav = ({ cartItems, auth, data, length }) => {
-    console.log(cartItems);
-    console.log(length);
+// const Nav = (props) => {
+const Nav = ({ cartItems, auth, countBookings }) => {
+    // console.log(props);
+    // console.log(cartItems);
+    // console.log(countBookings);
 
-    console.log("nav", auth);
+    // console.log("nav", auth);
+    const dispatch = useDispatch();
     const [openDrawer, setOpenDrawer] = React.useState(false);
     const subtotal = cartItems.reduce(
         (total, product) => total + parseFloat(product.harga),
@@ -50,6 +53,10 @@ const Nav = ({ cartItems, auth, data, length }) => {
 
             const response = await axios.post("/checkout", checkoutData);
 
+            // Dispatch aksi penghapusan item dari cart setelah berhasil checkout
+            cartItems.forEach((item) => {
+                dispatch(removeCartItem(item.id));
+            });
             toast.success(response.data.message, {
                 position: "bottom-right",
                 autoClose: 3000,
@@ -160,8 +167,8 @@ const Nav = ({ cartItems, auth, data, length }) => {
                                                         <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
                                                             <div className="flex items-start justify-between">
                                                                 <Dialog.Title className="text-lg font-medium text-gray-900">
-                                                                    Shopping
-                                                                    cart
+                                                                    Keranjang
+                                                                    Belanja
                                                                 </Dialog.Title>
                                                                 <div className="ml-3 flex h-7 items-center">
                                                                     <button
@@ -318,7 +325,7 @@ const Nav = ({ cartItems, auth, data, length }) => {
                                 />
                             </svg>
                             <span className="badge badge-xs indicator-item">
-                                {length}
+                                {countBookings}
                             </span>
                         </div>
                     </Link>
@@ -340,13 +347,13 @@ const Nav = ({ cartItems, auth, data, length }) => {
                         className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
                     >
                         <li>
-                            <a className="justify-between">
-                                Profile
-                                <span className="badge">New</span>
-                            </a>
+                            <a className="justify-between">{auth.name}</a>
+                            <Link href={route("profile.edit")}>Profile</Link>
                         </li>
                         <li>
-                            <Link>Tiket</Link>
+                            <Link href={route("tiket.index")} as="button">
+                                Tiket
+                            </Link>
                         </li>
                         <li>
                             <a>Settings</a>
@@ -369,6 +376,14 @@ const Nav = ({ cartItems, auth, data, length }) => {
 const mapStateToProps = (state) => {
     return {
         cartItems: state.cartItems,
+    };
+};
+
+// actions.js
+export const removeCartItem = (productId) => {
+    return {
+        type: "REMOVE_CART_ITEM",
+        payload: productId,
     };
 };
 

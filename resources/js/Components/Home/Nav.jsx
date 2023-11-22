@@ -2,7 +2,7 @@ import { Link } from "@inertiajs/react";
 import React, { useEffect, useState } from "react";
 import ResponsiveNavLink from "../ResponsiveNavLink";
 export default function Nav({ props }) {
-    // console.log("nav:", props);
+    console.log("nav:", props);
     const [isHamburgerActive, setHamburgerActive] = useState(false);
     const [isNavMenuActive, setNavMenuActive] = useState(false);
 
@@ -83,7 +83,7 @@ export default function Nav({ props }) {
                                         </li>
                                         <li className="group">
                                             <Link
-                                                href={route("tiket.index")} // Navigate to the "register" route
+                                                href={route("tiket.index")}
                                                 className="text-base text-dark  py-2 mx-8 flex group-hover:text-primary"
                                             >
                                                 Project
@@ -130,12 +130,6 @@ export default function Nav({ props }) {
                                             >
                                                 Logout
                                             </ResponsiveNavLink>
-                                            {/* <form method="post">
-                                                <a href={route("logout")}
-                                                    className="text-base text-dark  py-2 mx-8 flex group-hover:text-primary" >
-                                                    Logout
-                                                </a>
-                                            </form> */}
                                         </li>
                                     </>
                                 ) : (

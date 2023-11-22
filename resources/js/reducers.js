@@ -12,6 +12,13 @@ const rootReducer = (state = initialState, action) => {
                 ...state,
                 cartItems: [...state.cartItems, action.payload],
             };
+        case "REMOVE_CART_ITEM":
+            return {
+                ...state,
+                cartItems: state.cartItems.filter(
+                    (item) => item.id !== action.payload
+                ),
+            };
         // cases lainnya...
         default:
             return state;

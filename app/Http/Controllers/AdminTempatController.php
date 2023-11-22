@@ -14,6 +14,7 @@ class AdminTempatController extends Controller
      */
     public function index()
     {
+
         $tempats = Tempat::all();
         return Inertia::render('Admin/Tempat/Index', [
             'tempats' => $tempats

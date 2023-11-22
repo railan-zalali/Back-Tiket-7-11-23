@@ -3,6 +3,8 @@
 use App\Http\Controllers\AdminTempatController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\FotoTempatController;
+use App\Http\Controllers\PayController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TempatController;
 use App\Http\Controllers\TicketsController;
@@ -36,28 +38,32 @@ use function Termwind\render;
 //     ]);
 // });
 
+// Route::resource('/pay', PaymentController::class);
+Route::resource('/pay', PayController::class);
 
 
-Route::get('/tempats', [AdminTempatController::class, 'index'])->middleware(['auth', 'verified'])->name('tempats.index');
-Route::get('/tempats/create', [AdminTempatController::class, 'create'])->name('tempats.create');
-Route::post('/tempats', [AdminTempatController::class, 'store'])->name('tempats.store');
-Route::get('/tempats/{id}/edit', [AdminTempatController::class, 'edit'])->name('tempats.edit');
-Route::put('/tempats/{id}', [AdminTempatController::class, 'update'])->name('tempats.update');
-Route::delete('/tempats/{id}', [AdminTempatController::class, 'destroy'])->middleware(['auth', 'verified'])->name('tempats.destroy');
+Route::middleware(['auth', 'verified', 'admin'])->group(function () {
+    Route::get('/tempats', [AdminTempatController::class, 'index'])->name('tempats.index');
+    Route::get('/tempats/create', [AdminTempatController::class, 'create'])->name('tempats.create');
+    Route::post('/tempats', [AdminTempatController::class, 'store'])->name('tempats.store');
+    Route::get('/tempats/{id}/edit', [AdminTempatController::class, 'edit'])->name('tempats.edit');
+    Route::put('/tempats/{id}', [AdminTempatController::class, 'update'])->name('tempats.update');
+    Route::delete('/tempats/{id}', [AdminTempatController::class, 'destroy'])->name('tempats.destroy');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/', [TempatController::class, "home"])->name('tiket.home');
+    Route::get('/tiket', [TempatController::class, 'index'])->name('tiket.index');
+    Route::post('/tiket/result', [TempatController::class, 'searchTickets'])->name('tiket.searchTickets');
 
 
-Route::get('/', [TempatController::class, "home"])->name('tiket.home');
-Route::get('/tiket', [TempatController::class, 'index'])->middleware(['auth', 'verified'])->name('tiket.index');
-Route::post('/tiket/result', [TempatController::class, 'searchTickets'])->middleware(['auth', 'verified'])->name('tiket.searchTickets');
-
-
-Route::post('/checkout', [BookingController::class, 'checkout'])->name('checkout');
-Route::get('/confirm', [BookingController::class, 'confirmPage'])->name('confirm.page');
-Route::delete('/confirm/{id}', [BookingController::class, 'destroy'])->name('confirm.destroy');
-
+    Route::post('/checkout', [BookingController::class, 'checkout'])->name('checkout');
+    Route::get('/confirm', [BookingController::class, 'confirmPage'])->name('confirm.page');
+    Route::put('/confirm-checkout/{id}', [BookingController::class, 'confirmCheckout'])->name('confirm.checkout');
+    Route::delete('/confirm/{id}', [BookingController::class, 'destroy'])->name('confirm.destroy');
+});
 
 Route::post('/keep-tickets', [TicketsController::class, 'store'])->name('keepTickets');
-
 Route::get('/booking-data', [BookingController::class, 'count'])->middleware(['auth', 'verified']);
 Route::get('/cart', [BookingController::class, 'show'])->name('cart');
 Route::delete('/cart/{id}', [BookingController::class, 'destroy'])->name('cart.destroy');

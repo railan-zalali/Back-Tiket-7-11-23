@@ -7,9 +7,16 @@ import Nav from "@/Components/Tiket/Nav";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const ResultSearch = ({ auth, addToCart, dateAndDays, result }) => {
+const ResultSearch = ({
+    auth,
+    addToCart,
+    dateAndDays,
+    result,
+    countBookings,
+}) => {
     const [harga, setHarga] = useState("");
     const [ticketType, setTicketType] = useState("REGULER");
+    const [vehicleType, setVehicleType] = useState("RODA2");
 
     const submit = (e) => {
         e.preventDefault();
@@ -21,6 +28,7 @@ const ResultSearch = ({ auth, addToCart, dateAndDays, result }) => {
             tanggal: e.target.tanggal.value,
             harga: e.target.harga.value,
             tipe_tiket: e.target.tipe_tiket.value,
+            vehicle_type: vehicleType,
         };
 
         addToCart(formData);
@@ -40,20 +48,24 @@ const ResultSearch = ({ auth, addToCart, dateAndDays, result }) => {
             updatedHarga += 10000;
         }
 
+        // Update price based on the selected vehicle type
+        if (vehicleType === "RODA2") {
+            updatedHarga += 7500;
+        } else if (vehicleType === "RODA4") {
+            updatedHarga += 15000;
+        }
+
         setHarga(updatedHarga.toFixed(2));
-    }, [ticketType, result]);
+    }, [ticketType, result, vehicleType]);
 
     return (
         <>
-            <Nav />
+            <Nav auth={auth.user} countBookings={countBookings} />
 
             <section className="pt-24 pb-32 bg-slate-100">
                 <div className="container mx-auto">
                     <div className="w-full px-4">
                         <div className="max-w-xl mx-auto text-center mb-8">
-                            <h4 className="font-semibold text-lg text-primary mb-2">
-                                Cari Tiket
-                            </h4>
                             <h2 className="font-bold text-dark text-3xl mb-4 sm:text-4xl">
                                 Cari Destinasi Yang Kamu Inginkan
                             </h2>
@@ -138,6 +150,32 @@ const ResultSearch = ({ auth, addToCart, dateAndDays, result }) => {
                                                     </option>
                                                     <option value="REGULER">
                                                         REGULER
+                                                    </option>
+                                                </select>
+                                            </div>
+                                            <div className="py-2">
+                                                <label
+                                                    htmlFor="vehicle_type"
+                                                    className="label"
+                                                >
+                                                    Jenis Kendaraan
+                                                </label>
+                                                <select
+                                                    name="vehicle_type"
+                                                    id="vehicle_type"
+                                                    className="select select-bordered w-full"
+                                                    onChange={(e) =>
+                                                        setVehicleType(
+                                                            e.target.value
+                                                        )
+                                                    }
+                                                    value={vehicleType}
+                                                >
+                                                    <option value="RODA2">
+                                                        Roda 2
+                                                    </option>
+                                                    <option value="RODA4">
+                                                        Roda 4
                                                     </option>
                                                 </select>
                                             </div>

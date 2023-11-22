@@ -32,14 +32,12 @@ export default function Index({ tempats, auth, head }) {
                 <Head title={head} />
                 <div className="container mx-auto p-4">
                     <div className="py-4">
-                        {/* <div className="max-w-7xl mx-auto sm:px-6 lg:px-8"> */}
                         <div className="w-full mx-auto min-h-screen sm:px-6 lg:px-8">
                             <div className="bg-slate-500 overflow-hidden shadow-sm sm:rounded-lg">
                                 <div className="p-6 bg-white border-b border-gray-200">
                                     <div className="flex items-center justify-center mb-6">
                                         <div className="overflow-x-auto">
                                             <table className="table table-lg">
-                                                {/* head */}
                                                 <thead>
                                                     <tr>
                                                         <th className="py-2">
@@ -90,11 +88,6 @@ export default function Index({ tempats, auth, head }) {
                                                                                 tempat.nama_tempat
                                                                             }
                                                                         </div>
-                                                                        <div className="text-sm opacity-50">
-                                                                            {
-                                                                                tempat.alamat
-                                                                            }
-                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </td>
@@ -102,6 +95,11 @@ export default function Index({ tempats, auth, head }) {
                                                                 {
                                                                     tempat.deskripsi
                                                                 }
+                                                                <div className="text-sm opacity-50">
+                                                                    {
+                                                                        tempat.alamat
+                                                                    }
+                                                                </div>
                                                             </td>
                                                             <td>
                                                                 {

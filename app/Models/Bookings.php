@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Bookings extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id', 'tempat_id', 'tanggal', 'tipe_tiket', 'harga'];
+    protected $fillable = ['user_id', 'tempat_id', 'tanggal', 'tipe_tiket', 'harga', 'status'];
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -17,5 +17,9 @@ class Bookings extends Model
     public function tempat()
     {
         return $this->belongsTo(Tempat::class);
+    }
+    public function tikets()
+    {
+        return $this->hasMany(Tikets::class);
     }
 }

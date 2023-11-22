@@ -1,7 +1,7 @@
 import Nav from "@/Components/Tiket/Nav";
 import { useForm } from "@inertiajs/react";
 import React, { useState } from "react";
-export default function Index({ props, auth }) {
+export default function Index({ props, auth, countBookings }) {
     // console.log("Tiket", dateAndDays);
 
     console.log(auth.user);
@@ -25,7 +25,7 @@ export default function Index({ props, auth }) {
 
     return (
         <>
-            <Nav auth={auth.user} />
+            <Nav auth={auth.user} countBookings={countBookings} />
             <section className="pt-24 pb-32 bg-slate-100">
                 <div className="w-full px-4">
                     <div className="max-w-xl mx-auto text-center mb-8">

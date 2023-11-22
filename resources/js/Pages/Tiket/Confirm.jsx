@@ -1,12 +1,54 @@
+import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import Nav from "@/Components/Tiket/Nav";
-import { router } from "@inertiajs/react";
-import { Link } from "react-router-dom";
+import { router, useForm } from "@inertiajs/react";
+import { useState } from "react";
+import QRCode from "qrcode.react";
 
 // const Confirm = (props) => {
 const Confirm = ({ data, auth, countBookings }) => {
     console.log(data);
-    console.log(countBookings);
+    // console.log(data[0].user.name);
+    console.log("confirm", countBookings);
     // console.log(props);
+    const [isModalOpen, setModalOpen] = useState(false);
+    const [isModalOpenQr, setModalOpenQr] = useState(false);
+    const [qrCodeValue, setQRCodeValue] = useState("");
+
+    const openModalQr = () => {
+        setModalOpenQr(true);
+    };
+    const closeModalQr = () => {
+        setModalOpenQr(false);
+    };
+
+    const openModal = () => {
+        setModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setModalOpen(false);
+    };
+    // console.log(data.data.id);
+
+    const cetakFunction = () => {
+        const qrCodeArray = [`${data[0].id}`];
+
+        // Gabungkan array menjadi satu string dengan pemisah tertentu, misalnya '\n' (baris baru)
+        const qrCodeData = qrCodeArray.join("\n");
+
+        // Setel nilai QR code
+        setQRCodeValue(qrCodeData);
+
+        // Buka modal QR
+        openModalQr();
+    };
+    const confirmCheckout = (id) => {
+        const formData = new FormData();
+        formData.append("id", id);
+
+        router.put(route("confirm.checkout", id), formData);
+    };
+
     function destroy(e) {
         console.log(e.currentTarget.id);
         if (confirm("Apakah anda yakin ingin menghapus data post ini?")) {
@@ -86,9 +128,6 @@ const Confirm = ({ data, auth, countBookings }) => {
                                                                                     .tempat
                                                                                     .nama_tempat
                                                                             }
-                                                                            {
-                                                                                data.id
-                                                                            }
                                                                         </div>
                                                                         <div className="text-base text-gray-700 truncate max-w-xs">
                                                                             {
@@ -120,7 +159,7 @@ const Confirm = ({ data, auth, countBookings }) => {
                                                                 {data.status}
                                                             </td>
                                                             <td>
-                                                                <Link
+                                                                {/* <Link
                                                                     href={route(
                                                                         "tempats.edit",
                                                                         data.id
@@ -128,7 +167,235 @@ const Confirm = ({ data, auth, countBookings }) => {
                                                                     className="btn btn-success btn-xs hover:text-white mr-2"
                                                                 >
                                                                     Confirm
-                                                                </Link>
+                                                                </Link> */}
+                                                                <button
+                                                                    className="btn btn-success btn-xs hover:text-white mr-2"
+                                                                    onClick={
+                                                                        openModal
+                                                                    }
+                                                                    disabled={
+                                                                        data.status ===
+                                                                        "success"
+                                                                    }
+                                                                >
+                                                                    Confirm
+                                                                </button>
+                                                                {data.status ===
+                                                                    "success" && (
+                                                                    <button
+                                                                        className="btn btn-primary btn-xs hover:text-white"
+                                                                        onClick={
+                                                                            cetakFunction
+                                                                        }
+                                                                    >
+                                                                        Cetak
+                                                                    </button>
+                                                                )}
+
+                                                                <dialog
+                                                                    id="my_modal_2"
+                                                                    className={`modal modal-bottom sm:modal-middle ${
+                                                                        isModalOpen
+                                                                            ? "modal-open"
+                                                                            : ""
+                                                                    }`}
+                                                                    onClick={(
+                                                                        e
+                                                                    ) => {
+                                                                        // Tutup modal jika di luar modal diklik
+                                                                        if (
+                                                                            e
+                                                                                .target
+                                                                                .id ===
+                                                                            "my_modal_2"
+                                                                        ) {
+                                                                            closeModal();
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    <div className="modal-box">
+                                                                        <form
+                                                                            onSubmit={
+                                                                                confirmCheckout
+                                                                            }
+                                                                            encType="multipart/form-data"
+                                                                        >
+                                                                            <input
+                                                                                type="hidden"
+                                                                                name="id"
+                                                                                value={
+                                                                                    data.id
+                                                                                }
+                                                                            />
+                                                                            <div className="flex items-center justify-center pt-6 mx-auto">
+                                                                                {/* Formulir Kiri */}
+                                                                                <div className="flex flex-col mx-auto">
+                                                                                    <label
+                                                                                        htmlFor="username"
+                                                                                        className="mb-2 text-gray-600"
+                                                                                    >
+                                                                                        Username
+                                                                                    </label>
+                                                                                    <input
+                                                                                        type="text"
+                                                                                        id="username"
+                                                                                        name="username"
+                                                                                        value={
+                                                                                            data
+                                                                                                .user
+                                                                                                .username
+                                                                                        }
+                                                                                        className="mb-4 p-2 border border-gray-300 rounded-md"
+                                                                                    />
+
+                                                                                    <label
+                                                                                        htmlFor="name"
+                                                                                        className="mb-2 text-gray-600"
+                                                                                    >
+                                                                                        Nama
+                                                                                    </label>
+                                                                                    <input
+                                                                                        type="text"
+                                                                                        id="name"
+                                                                                        name="name"
+                                                                                        value={
+                                                                                            data
+                                                                                                .user
+                                                                                                .name
+                                                                                        }
+                                                                                        className="mb-4 p-2 border border-gray-300 rounded-md"
+                                                                                    />
+
+                                                                                    <label
+                                                                                        htmlFor="email"
+                                                                                        className="mb-2 text-gray-600"
+                                                                                    >
+                                                                                        Email
+                                                                                    </label>
+                                                                                    <input
+                                                                                        type="email"
+                                                                                        id="email"
+                                                                                        name="email"
+                                                                                        value={
+                                                                                            data
+                                                                                                .user
+                                                                                                .email
+                                                                                        }
+                                                                                        className="mb-4 p-2 border border-gray-300 rounded-md"
+                                                                                    />
+                                                                                </div>
+
+                                                                                {/* Garis Lurus Vertikal */}
+                                                                                <div className="border-r border-gray-300 h-40"></div>
+
+                                                                                {/* Formulir Kanan */}
+                                                                                <div className="flex flex-col mx-auto">
+                                                                                    <label
+                                                                                        htmlFor="nama_tempat"
+                                                                                        className="mb-2 text-gray-600"
+                                                                                    >
+                                                                                        Nama
+                                                                                        Tempat
+                                                                                    </label>
+                                                                                    <input
+                                                                                        type="text"
+                                                                                        id="nama_tempat"
+                                                                                        name="nama_tempat"
+                                                                                        value={
+                                                                                            data
+                                                                                                .tempat
+                                                                                                .nama_tempat
+                                                                                        }
+                                                                                        className="mb-4 p-2 border border-gray-300 rounded-md"
+                                                                                    />
+
+                                                                                    <label
+                                                                                        htmlFor="tanggal"
+                                                                                        className="mb-2 text-gray-600"
+                                                                                    >
+                                                                                        Tanggal
+                                                                                    </label>
+                                                                                    <input
+                                                                                        type="text"
+                                                                                        id="tanggal"
+                                                                                        name="tanggal"
+                                                                                        value={
+                                                                                            data.tanggal
+                                                                                        }
+                                                                                        className="mb-4 p-2 border border-gray-300 rounded-md"
+                                                                                    />
+                                                                                    <div className="flex space-x-4 mb-4">
+                                                                                        <div className="flex flex-col w-24">
+                                                                                            <label
+                                                                                                htmlFor="harga"
+                                                                                                className="mb-2 text-gray-600"
+                                                                                            >
+                                                                                                Jumlah
+                                                                                                Tiket
+                                                                                            </label>
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                id="harga1"
+                                                                                                name="harga1"
+                                                                                                value={
+                                                                                                    data.jumlah_tiket
+                                                                                                }
+                                                                                                className="p-2 border border-gray-300 rounded-md"
+                                                                                            />
+                                                                                        </div>
+
+                                                                                        <div className="flex flex-col w-24">
+                                                                                            <label
+                                                                                                htmlFor="harga"
+                                                                                                className="mb-2 text-gray-600"
+                                                                                            >
+                                                                                                Harga
+                                                                                                Tiket
+                                                                                            </label>
+                                                                                            <input
+                                                                                                type="text"
+                                                                                                id="harga2"
+                                                                                                name="harga2"
+                                                                                                value={
+                                                                                                    data.harga
+                                                                                                }
+                                                                                                className="p-2 border border-gray-300 rounded-md"
+                                                                                            />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div className="modal-action">
+                                                                                <button
+                                                                                    onClick={() =>
+                                                                                        confirmCheckout(
+                                                                                            data.id
+                                                                                        )
+                                                                                    }
+                                                                                    id={
+                                                                                        data.id
+                                                                                    }
+                                                                                    tabIndex="-1"
+                                                                                    type="button"
+                                                                                    className="btn btn-primary hover:text-white"
+                                                                                >
+                                                                                    Confirm
+                                                                                </button>
+
+                                                                                <button
+                                                                                    className="btn"
+                                                                                    onClick={
+                                                                                        closeModal
+                                                                                    }
+                                                                                >
+                                                                                    Close
+                                                                                </button>
+                                                                            </div>
+                                                                        </form>
+                                                                    </div>
+                                                                </dialog>
+
                                                                 <button
                                                                     onClick={
                                                                         destroy
@@ -149,6 +416,43 @@ const Confirm = ({ data, auth, countBookings }) => {
                                                 })}
                                             </tbody>
                                         </table>
+
+                                        <div>
+                                            <dialog
+                                                id="my_modal_5"
+                                                className={`modal modal-bottom sm:modal-middle ${
+                                                    isModalOpenQr
+                                                        ? "modal-open"
+                                                        : ""
+                                                }`}
+                                            >
+                                                <div className="modal-box">
+                                                    <h1 className="font-bold text-lg">
+                                                        Qr Code Kamu
+                                                    </h1>
+                                                    <p className="py-4">
+                                                        Harap tunjukan Qr Code
+                                                        saat di loket
+                                                    </p>
+                                                    <QRCode
+                                                        value={qrCodeValue}
+                                                    />
+                                                    <div className="modal-action">
+                                                        <form method="dialog">
+                                                            {/* if there is a button in form, it will close the modal */}
+                                                            <button
+                                                                className="btn"
+                                                                onClick={
+                                                                    closeModalQr
+                                                                }
+                                                            >
+                                                                Close
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </dialog>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

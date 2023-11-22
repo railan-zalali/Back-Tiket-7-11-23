@@ -6,6 +6,8 @@ import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import { Link } from "@inertiajs/react";
 
 export default function Authenticated({ user, header, children }) {
+    console.log(user);
+    // console.log(user.role);
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
 
@@ -29,14 +31,34 @@ export default function Authenticated({ user, header, children }) {
                                     Dashboard
                                 </NavLink>
                             </div>
-                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink
-                                    href={route("tempats.index")}
-                                    active={route().current("tempats.index")}
-                                >
-                                    Tempat
-                                </NavLink>
-                            </div>
+                            {user.role === "admin" ? (
+                                <>
+                                    <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                        <NavLink
+                                            href={route("tempats.index")}
+                                            active={route().current(
+                                                "tempats.index"
+                                            )}
+                                        >
+                                            Tempat
+                                        </NavLink>
+                                    </div>
+                                    <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                        <NavLink
+                                            href={route("pay.index")}
+                                            active={route().current(
+                                                "pay.index"
+                                            )}
+                                        >
+                                            Scan Tiket
+                                        </NavLink>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                                    <NavLink href="/">Tiket</NavLink>
+                                </div>
+                            )}
                         </div>
 
                         <div className="hidden sm:flex sm:items-center sm:ml-6">
@@ -71,6 +93,11 @@ export default function Authenticated({ user, header, children }) {
                                             href={route("profile.edit")}
                                         >
                                             Profile
+                                        </Dropdown.Link>
+                                        <Dropdown.Link
+                                            href={route("tiket.index")}
+                                        >
+                                            Tiket
                                         </Dropdown.Link>
                                         <Dropdown.Link
                                             href={route("logout")}

@@ -7,6 +7,7 @@ use App\Http\Requests\StoreBookingRequest;
 use App\Http\Requests\UpdateBookingRequest;
 use App\Models\Bookings;
 use App\Models\Tempat;
+use App\Models\Tikets;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -46,9 +47,24 @@ class BookingController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreBookingRequest $request)
+    public function store($id)
     {
-        //
+        // $booking = Bookings::find($id);
+        // dd($booking->status);
+
+        // Perbarui status booking menjadi 'success'
+        // $booking->update(['status' => 'success']);
+
+        // Cetak status setelah pembaruan
+        // dd($booking->status);
+        // $booking->update(['status' => 'success']);
+
+        // Tikets::create([
+        // 'bookings_id' => $booking->id,
+        // Tambahkan bidang-bidang lain sesuai kebutuhan
+        // ]);
+
+        // return response()->json(['message' => 'Checkout berhasil']);
     }
 
     /**
@@ -88,29 +104,33 @@ class BookingController extends Controller
      */
     public function destroy($id)
     {
-
         try {
+            // Cari booking dengan ID yang dimaksud
             $booking = Bookings::find($id);
 
-            $id = auth()->user()->id;
-            $data = Bookings::where('user_id', $id)->count();
-            // dd($data);
+            // Pastikan booking ditemukan
             if (!$booking) {
                 return response()->json(['message' => 'Booking not found'], 404);
             }
 
-            // $booking->delete();
-            // return redirect()->route('confirm.page', ([
-            //     'countBookings' => $data
-            // ]));
-            return response()->json([
-                'message' => 'Data berhasil dihapus',
+            // Hapus booking
+            $booking->delete();
+
+            // Hitung ulang jumlah booking untuk pengguna yang diotentikasi
+            $id = auth()->user()->id;
+            $data = Bookings::where('user_id', $id)->count();
+
+            // Redirect dengan pesan dan jumlah booking terkini
+            return redirect()->route('confirm.page')->with([
+                'message' => 'Booking berhasil dihapus',
                 'countBookings' => $data
-            ], 200);
+            ]);
         } catch (\Exception $e) {
+            // Tangani kesalahan
             return response()->json(['message' => 'Gagal melakukan hapus', 'error' => $e->getMessage()], 500);
         }
     }
+
 
     public function checkout(Request $request)
     {
@@ -125,6 +145,8 @@ class BookingController extends Controller
 
 
             $user_id = auth()->user()->id;
+
+            $data = Bookings::where('user_id', $user_id)->count();
             // Ambil data dari request
             $items = $request->input('items');
             $subtotal = $request->input('subtotal');
@@ -146,7 +168,11 @@ class BookingController extends Controller
 
             $booking->save();
 
-            return response()->json(['message' => 'Data berhasil disimpan'], 200);
+
+            return response()->json([
+                'message' => 'Data berhasil disimpan',
+                'countBookings' => $data
+            ], 200);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Gagal melakukan checkout', 'error' => $e->getMessage()], 500);
         }
@@ -154,13 +180,31 @@ class BookingController extends Controller
     public function confirmPage()
     {
         $id = auth()->user()->id;
+
+        $jumlahData = Bookings::where('user_id', $id)->count();
         $bookings = Bookings::with(['user', 'tempat'])
             ->where('user_id', $id)
             ->get();
         // dd($bookings);
         return Inertia::render('Tiket/Confirm', [
             'head' => 'Confirm',
-            'data' => $bookings
+            'data' => $bookings,
+            'countBookings' => $jumlahData
         ]);
+    }
+    public function confirmCheckout($id)
+    {
+        try {
+            $booking = Bookings::findOrFail($id);
+            $booking->update(['status' => 'success']);
+            Tikets::create([
+                'bookings_id' => $booking->id,
+                // Tambahkan bidang-bidang lain sesuai kebutuhan
+            ]);
+
+            return redirect()->back()->with('success', 'Status booking berhasil diubah.');
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Konfirmasi gagal.'], 500);
+        }
     }
 }

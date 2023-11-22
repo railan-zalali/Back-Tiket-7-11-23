@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TempatStoreRequest;
+use App\Models\Bookings;
 use App\Models\Tempat;
 use App\Models\TicketType;
 use App\Models\User;
@@ -14,9 +15,14 @@ use PHPUnit\Framework\Attributes\Ticket;
 
 class TempatController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     public function home()
     {
-        $data = User::all();
+        $id = auth()->user()->id;
+        $data = User::where('id', $id)->get();
 
         return Inertia::render('Home', [
             'props' => $data
@@ -24,6 +30,7 @@ class TempatController extends Controller
     }
     public function index()
     {
+
         $today = Carbon::now();
         // Inisialisasi array untuk menyimpan tanggal dan hari
         $dates = [];
@@ -38,11 +45,14 @@ class TempatController extends Controller
                 'day' => $dayOfWeek,
             ];
         }
+        $id = auth()->user()->id;
+        $jumlahData = Bookings::where('user_id', $id)->count();
         $data = Tempat::all();
         return Inertia::render('Tiket/Index', [
             'props' => $data,
             'today' => $today,
-            'dateAndDays' => $dates
+            'dateAndDays' => $dates,
+            'countBookings' => $jumlahData
         ]);
     }
 
@@ -179,6 +189,9 @@ class TempatController extends Controller
             ];
         }
 
+        $id = auth()->user()->id;
+
+        $jumlahData = Bookings::where('user_id', $id)->count();
         $result = Tempat::where('nama_tempat', $request->nama_tempat)
             ->get();
 
@@ -187,6 +200,7 @@ class TempatController extends Controller
             'head' => 'result',
             'result' => $result,
             'dateAndDays' => $dates,
+            'countBookings' => $jumlahData
         ]);
     }
 
